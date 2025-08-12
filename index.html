@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gym Log</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Gym Log">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img id="headerLogo" class="logo hidden" alt="Logo" />
+      <h1 id="appTitle">Gym Log</h1>
+    </div>
+    <nav>
+      <select id="profileSelect" title="Profile"></select>
+      <button class="tab-btn" data-tab="today">Today</button>
+      <button class="tab-btn" data-tab="library">Exercises</button>
+      <button class="tab-btn" data-tab="workouts">Workouts</button>
+      <button class="tab-btn" data-tab="history">History</button>
+      <button class="tab-btn" data-tab="stats">Stats</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
+      <button id="exportBtn" title="Export profile data">Export</button>
+      <button id="exportHealthBtn" title="Export JSON for Apple Shortcut">Export Health (Shortcut)</button>
+      <label class="import-label">
+        Import <input type="file" id="importFile" accept="application/json" hidden>
+      </label>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TODAY TAB -->
+    <section id="tab-today" class="tab active">
+      <div class="toolbar">
+        <select id="startWorkoutSelect"></select>
+        <button id="startWorkoutBtn">Start Workout</button>
+        <button id="endWorkoutBtn" class="danger">End Workout</button>
+      </div>
+      <div id="activeWorkout"></div>
+      <div class="timer">
+        <span id="timerDisplay">00:00</span>
+        <button id="startTimer">Start</button>
+        <button id="stopTimer">Stop</button>
+        <button id="resetTimer">Reset</button>
+      </div>
+      <p class="small">Tip: If you plan to log to Apple Health via Shortcut, start the timer when you begin and stop it when you finish.</p>
+    </section>
+
+    <!-- EXERCISE LIBRARY TAB -->
+    <section id="tab-library" class="tab">
+      <h2>Exercise Library</h2>
+      <form id="exerciseForm">
+        <input id="exName" placeholder="Name (e.g., Bench Press)" required>
+        <input id="exBodypart" placeholder="Body part (e.g., Chest)">
+        <select id="exUnit">
+          <option value="kg">kg</option>
+          <option value="lb">lb</option>
+          <option value="bw">bodyweight</option>
+        </select>
+        <input id="exVideo" placeholder="Video URL (YouTube or MP4)" />
+        <button type="submit">Add</button>
+      </form>
+      <ul id="exerciseList"></ul>
+      <p class="small">Tap ▶ to play videos inside the app.</p>
+    </section>
+
+    <!-- WORKOUTS TAB -->
+    <section id="tab-workouts" class="tab">
+      <h2>Workouts</h2>
+      <form id="workoutForm">
+        <input id="woName" placeholder="Workout name (e.g., Push Day)" required>
+        <button type="submit">Create</button>
+      </form>
+      <div id="workoutList"></div>
+      <div id="workoutEditor" class="card hidden">
+        <h3 id="woTitle"></h3>
+        <div class="row">
+          <select id="woExerciseSelect"></select>
+          <button id="addExToWo">Add Exercise</button>
+        </div>
+        <ul id="woExercises"></ul>
+        <button id="saveWorkout" class="primary">Save Workout</button>
+        <button id="closeEditor">Close</button>
+      </div>
+    </section>
+
+    <!-- HISTORY TAB -->
+    <section id="tab-history" class="tab">
+      <h2>History</h2>
+      <div id="historyList"></div>
+    </section>
+
+    <!-- STATS TAB -->
+    <section id="tab-stats" class="tab">
+      <h2>Stats</h2>
+      <div class="row">
+        <select id="statsExerciseSelect"></select>
+        <button id="calcStatsBtn">Calculate</button>
+      </div>
+      <div id="statsOutput"></div>
+    </section>
+
+    <!-- SETTINGS TAB -->
+    <section id="tab-settings" class="tab">
+      <h2>Settings</h2>
+      <div class="card">
+        <h3>Profiles</h3>
+        <div class="row">
+          <input id="newProfileName" placeholder="New profile name">
+          <button id="addProfileBtn">Add Profile</button>
+          <button id="renameProfileBtn">Rename Current</button>
+          <button id="deleteProfileBtn" class="danger">Delete Current</button>
+        </div>
+        <p class="small">Each profile has its own exercises, workouts, history, and appearance.</p>
+      </div>
+
+      <div class="card">
+        <h3>Appearance</h3>
+        <div class="grid2">
+          <label>Title <input id="titleInput" placeholder="e.g., Mike's Gym Log"></label>
+          <label>Background <input type="color" id="c_bg"></label>
+          <label>Card <input type="color" id="c_card"></label>
+          <label>Text <input type="color" id="c_text"></label>
+          <label>Muted <input type="color" id="c_muted"></label>
+          <label>Accent <input type="color" id="c_accent"></label>
+          <label>Primary <input type="color" id="c_primary"></label>
+          <label>Danger <input type="color" id="c_danger"></label>
+        </div>
+        <div class="row">
+          <button id="saveThemeBtn" class="primary">Save Theme</button>
+          <button id="resetThemeBtn">Reset to Default</button>
+          <button id="presetDarkBtn">Preset: Dark</button>
+          <button id="presetLightBtn">Preset: Light</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Logo</h3>
+        <div class="row">
+          <input type="file" id="logoFile" accept="image/*">
+          <button id="removeLogoBtn" class="danger">Remove Logo</button>
+        </div>
+        <p class="small">Logo appears in the header for this profile.</p>
+      </div>
+
+      <div class="card">
+        <h3>Apple Shortcuts Export</h3>
+        <p class="small">Use the header button “Export Health (Shortcut)” after a workout. It creates a JSON file your Shortcut can read to log the workout to Apple Health.</p>
+        <ol class="small">
+          <li>Finish a workout → tap <strong>End Workout</strong>.</li>
+          <li>Tap <strong>Export Health (Shortcut)</strong> in the header.</li>
+          <li>Choose <strong>Share</strong> then <strong>Shortcuts</strong> (or save the file and pick it in Shortcuts).</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+
+  <!-- Video Modal -->
+  <div id="videoModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Exercise video">
+    <div class="modal-content">
+      <button id="closeModal" class="close-btn" aria-label="Close">×</button>
+      <div id="videoContainer"></div>
+    </div>
+  </div>
+
+  <footer>
+    <small>Offline-ready • Your data stays on this device • v2.3 (profiles + themes + logo + in-app video + Shortcut export)</small>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
